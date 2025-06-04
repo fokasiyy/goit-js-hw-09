@@ -1,39 +1,108 @@
-const form = document.querySelector('.js-feedback-form');
-const input = document.querySelector('.js-input');
-const textarea = document.querySelector('.js-textarea');
+const form = document.querySelector('.feedback-form');
+const input = document.querySelector('input');
+const textArea = document.querySelector('textarea')
+
+// localStorage.clear()
+const storageKey = "feedback-form-state";
 
 const formData = {
-  email: '',
-  message: '',
-};
-
-if (localStorage.getItem('feedback-form-state')) {
-  const LSData = JSON.parse(localStorage.getItem('feedback-form-state'));
-
-  input.value = LSData.email || '';
-  textarea.value = LSData.message || '';
-  formData.email = LSData.email || '';
-  formData.message = LSData.message || '';
+    email: '',
+    message: '',
 }
 
-form.addEventListener('input', e => {
-  formData.email = e.currentTarget.elements.email.value.trim();
-  formData.message = e.currentTarget.elements.message.value.trim();
+form.addEventListener('submit', handleForm);
+form.addEventListener('input', handleInputForm);
 
-  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
-});
 
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  if (!formData.email || !formData.message) {
-    alert('Fill please all fields');
-    return;
-  }
 
-  console.log(formData);
-  localStorage.removeItem('feedback-form-state');
-  formData.email = '';
-  formData.message = '';
-  input.value = '';
-  textarea.value = '';
-});
+const valueStorage = localStorage.getItem(storageKey);
+const parc = JSON.parse(valueStorage);
+
+if(parc !== null && parc !== undefined){
+    input.value = parc.email;
+    textArea.value = parc.message;
+    formData.email = parc.email;
+    formData.message = parc.message;
+    
+    
+}
+
+
+
+
+function handleForm(event){
+    event.preventDefault();
+
+    const form = event.currentTarget;
+
+
+    if(input.value.trim() === '' || textArea.value.trim() === ''){
+        alert('Fill please all fields');
+        return;
+        
+    }
+    else if(input.value.trim() !== '' && textArea.value.trim() !== ''){
+          console.log(formData);
+    } 
+    
+
+    
+
+    
+    
+    try {
+
+        
+
+        form.reset();
+        formData.email = '';
+        formData.message = '';
+        localStorage.removeItem(storageKey);
+        
+        
+        
+        
+    
+    } catch (error) {
+        alert(error.message);
+        
+    }
+        
+        
+    
+    
+    
+
+
+}
+
+
+// function handleInput(event){
+    
+//     const email = event.target.value;
+
+//     formData.email = email;
+   
+    
+    
+// }
+
+// function handleTextArea(event){
+//     const message = event.currentTarget.value;
+
+//     formData.message = message;
+    
+// }
+
+
+function handleInputForm(event){
+    const {name, value} = event.target;
+
+    if(name === 'email' || name === 'message'){
+        formData[name] = value.trim();
+
+    }
+    localStorage.setItem(storageKey, JSON.stringify(formData));
+    
+
+}
