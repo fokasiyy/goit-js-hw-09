@@ -1,51 +1,52 @@
-const formEl = document.querySelector('.feedback-form');
-const emailInput = document.querySelector('input[name="email"]');
-const messageInput = document.querySelector('textarea[name="message"]');
 const STORAGE_KEY = 'feedback-form-state';
 
-// Стан форми, який зберігаємо в localStorage
-let formData = {};
+const formData = {
+  email: '',
+  message: '',
+};
 
-// Завантажити збережені дані при завантаженні сторінки
-loadFormData();
+const form = document.querySelector('.feedback-form');
+const inputEmail = form.querySelector('input');
+const textarea = form.querySelector('textarea');
 
-// Слухач на зміну в будь-якому полі форми
-formEl.addEventListener('input', e => {
-  formData[e.target.name] = e.target.value;
+form.addEventListener('input', handleOnText);
+form.addEventListener('submit', handleSubmit);
+
+populateText();
+
+function handleOnText(event) {
+  const { name, value } = event.target;
+
+  if (name === 'email') {
+    formData.email = value.trim();
+  } else if (name === 'message') {
+    formData.message = value.trim();
+  }
+
   localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-});
+}
 
-// Слухач на submit форми
-formEl.addEventListener('submit', e => {
-  e.preventDefault();
+function populateText() {
+  const savedStorage = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if (savedStorage) {
+    formData.email = savedStorage.email || '';
+    formData.message = savedStorage.message || '';
+    inputEmail.value = formData.email;
+    textarea.value = formData.message;
+  }
+}
 
-  const email = emailInput.value.trim();
-  const message = messageInput.value.trim();
+function handleSubmit(event) {
+  event.preventDefault();
 
-  if (email === '' || message === '') {
-    alert('Please fill in all fields!');
+  if (formData.email === '' || formData.message === '') {
+    alert('Fill please all fields');
     return;
   }
 
-  console.log('Form submitted:', { email, message });
-
-  // Очищення
-  formEl.reset();
+  console.log(formData);
+  event.currentTarget.reset();
   localStorage.removeItem(STORAGE_KEY);
-  formData = {};
-});
-
-// Функція для завантаження збережених даних
-function loadFormData() {
-  const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-
-  if (savedData.email) {
-    emailInput.value = savedData.email;
-    formData.email = savedData.email;
-  }
-
-  if (savedData.message) {
-    messageInput.value = savedData.message;
-    formData.message = savedData.message;
-  }
+  formData.email = '';
+  formData.message = '';
 }
