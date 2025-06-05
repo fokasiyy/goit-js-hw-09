@@ -1,108 +1,51 @@
-const form = document.querySelector('.feedback-form');
-const input = document.querySelector('input');
-const textArea = document.querySelector('textarea')
+const formEl = document.querySelector('.feedback-form');
+const emailInput = document.querySelector('input[name="email"]');
+const messageInput = document.querySelector('textarea[name="message"]');
+const STORAGE_KEY = 'feedback-form-state';
 
-// localStorage.clear()
-const storageKey = "feedback-form-state";
+// Стан форми, який зберігаємо в localStorage
+let formData = {};
 
-const formData = {
-    email: '',
-    message: '',
-}
+// Завантажити збережені дані при завантаженні сторінки
+loadFormData();
 
-form.addEventListener('submit', handleForm);
-form.addEventListener('input', handleInputForm);
+// Слухач на зміну в будь-якому полі форми
+formEl.addEventListener('input', e => {
+  formData[e.target.name] = e.target.value;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+});
 
+// Слухач на submit форми
+formEl.addEventListener('submit', e => {
+  e.preventDefault();
 
+  const email = emailInput.value.trim();
+  const message = messageInput.value.trim();
 
-const valueStorage = localStorage.getItem(storageKey);
-const parc = JSON.parse(valueStorage);
+  if (email === '' || message === '') {
+    alert('Please fill in all fields!');
+    return;
+  }
 
-if(parc !== null && parc !== undefined){
-    input.value = parc.email;
-    textArea.value = parc.message;
-    formData.email = parc.email;
-    formData.message = parc.message;
-    
-    
-}
+  console.log('Form submitted:', { email, message });
 
+  // Очищення
+  formEl.reset();
+  localStorage.removeItem(STORAGE_KEY);
+  formData = {};
+});
 
+// Функція для завантаження збережених даних
+function loadFormData() {
+  const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
 
+  if (savedData.email) {
+    emailInput.value = savedData.email;
+    formData.email = savedData.email;
+  }
 
-function handleForm(event){
-    event.preventDefault();
-
-    const form = event.currentTarget;
-
-
-    if(input.value.trim() === '' || textArea.value.trim() === ''){
-        alert('Fill please all fields');
-        return;
-        
-    }
-    else if(input.value.trim() !== '' && textArea.value.trim() !== ''){
-          console.log(formData);
-    } 
-    
-
-    
-
-    
-    
-    try {
-
-        
-
-        form.reset();
-        formData.email = '';
-        formData.message = '';
-        localStorage.removeItem(storageKey);
-        
-        
-        
-        
-    
-    } catch (error) {
-        alert(error.message);
-        
-    }
-        
-        
-    
-    
-    
-
-
-}
-
-
-// function handleInput(event){
-    
-//     const email = event.target.value;
-
-//     formData.email = email;
-   
-    
-    
-// }
-
-// function handleTextArea(event){
-//     const message = event.currentTarget.value;
-
-//     formData.message = message;
-    
-// }
-
-
-function handleInputForm(event){
-    const {name, value} = event.target;
-
-    if(name === 'email' || name === 'message'){
-        formData[name] = value.trim();
-
-    }
-    localStorage.setItem(storageKey, JSON.stringify(formData));
-    
-
+  if (savedData.message) {
+    messageInput.value = savedData.message;
+    formData.message = savedData.message;
+  }
 }
