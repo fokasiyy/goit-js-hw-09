@@ -100,9 +100,8 @@ const images = [
     ul.insertAdjacentHTML('afterbegin', markUp);
 
     
-    const lightBox = new SimpleLightbox('.gallery a', {
-        captions: true,
-        captionsData: 'alt',
-        captionDelay: 250,
-        captionPosition: 'bottom',
-    })
+   const lightBox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+  captionPosition: 'bottom',
+});
